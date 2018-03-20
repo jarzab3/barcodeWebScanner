@@ -1,0 +1,97 @@
+{% include "header-min.html" %}
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <!--<a class="navbar-brand" href="#">Welcome</a>-->
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#">Stats</a></li>
+
+
+                <!--<li class="active dropdown">-->
+                <!--<a class="dropdown-toggle" data-toggle="dropdown" href="/">Home<span class="caret"></span></a>-->
+                <!--<ul class="dropdown-menu">-->
+                <!--<li><a href="#stats">Stats</a></li>-->
+                <!--</ul>-->
+                <!--</li>-->
+
+
+                <li><a href="/dashboard">Dashboard</a></li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- About Section -->
+<div id="about">
+    <div class="container">
+        <div class="section-title text-center center">
+            <h2>Searched websites</h2>
+            <hr>
+
+            {% if text %}
+                Changes?  : {{ text }}
+            {% endif %}
+
+
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-md-8 col-md-offset-2">
+                <div class="about-text">
+                    <h1>
+                        MORE COMING SOON
+                    </h1>
+
+                    <span>
+                        <a href="#" class="btn btn-default btn-lg" target="_blank">Visit N/A</a>
+
+                    <a href="#" class="btn btn-default btn-lg">Visit</a>
+                    </span>
+
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Contact Section -->
+<div id="contact" class="text-center">
+    <div class="container">
+        <div class="section-title center">
+            <h2></h2>
+            <hr>
+        </div>
+        <div class="col-md-8 col-md-offset-2">
+
+        </div>
+    </div>
+</div>
+
+<!--{% include "footer.html" %}-->
+
+<script src="{{ url_for('static', filename='javascripts/nivo-lightbox.js') }}"></script>
+<script src="{{ url_for('static', filename='javascripts/jquery.isotope.js') }}"></script>
+<script src="{{ url_for('static', filename='javascripts/jqBootstrapValidation.js') }}"></script>
+<script src="{{ url_for('static', filename='javascripts/contact_me.js') }}"></script>
+
+</body>
