@@ -9,21 +9,9 @@ import datetime
 import base64
 import subprocess
 from flask import send_file, send_from_directory
-<<<<<<< HEAD
-from flask_analytics import Analytics
-from OpenSSL import SSL
-=======
 import csv
 from time import gmtime, strftime
->>>>>>> 3ef34b191226f983ab31e4b62d2e5fc59fba7636
 
-from deepdiff import DeepDiff
-from pprint import pprint
-
-from Utils.writeToTSV import *
-from convertToTSV import *
-
-from getFilesFromWebsite import checkForUpdate, getLinksFromPage, clearDir
 
 app = Flask(__name__,
             static_url_path='',
@@ -90,76 +78,6 @@ def executeDigitRecognitionJava():
 @app.route('/dashboard')
 def govDataAccess():
 
-    basePath = 'dataFiles/'
-
-    # Setup stats file
-    statsPath = "stats/general.tsv"
-
-    # clearDir("stats/")
-
-    # Construct stats headers
-    headersData = ["local_authority_name", "base_url", "data_url", "file_type", "parent_container_element", "attr_type",
-                   "attr_name", "is_direct_access", "urls", "last_update"]
-
-    # writeToCSV(statsPath, headersData)
-
-    last_update = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-
-    page1 = ["ashfield", "https://www.ashfield.gov.uk", "https://www.ashfield.gov.uk/your-council/public-data/finances/payments-to-suppliers/", "csv", ["div", "class", "col-md-6 column"], False]
-
-    page = page1
-
-    # Initial file getting
-    # urls = getLinksFromPage(page[0], page[1],page[2], page[3], page[4], page[5])
-    # update stats file
-
-    # statsRow = [page[0], page[1],page[2], page[3], page[4], page[5], last_update, urls]
-
-
-
-    # writeToCSV(statsPath, statsRow)
-
-    # Convert data to tsv file
-    # writetoTSV(page[0])
-
-    # Check for an update
-
-    newUrls = checkForUpdate(page[0], page[1],page[2], page[3], page[4], page[5])
-
-    # print(newUrls)
-
-    statsPath = "stats/general.tsv"
-
-    header = []
-
-    rowCounter = 0
-
-    dataToCompare = []
-
-    with open(statsPath, 'r') as tsvfile:
-        reader = csv.reader(tsvfile, delimiter='\t')
-        header = False
-
-        for i, row in enumerate(reader):
-            if header == False:
-                header = row
-                header = True
-            else:
-                dataToCompare = row[7]
-
-                # print(row[7])
-                rowCounter += 1
-
-
-    dataFromFile = []
-
-    dataToCompare = dataToCompare.replace("[", "").replace("]", "")
-    text = dataToCompare.split(',')
-
-    for i in text:
-        i = i.replace("'", "").replace(" ", "")
-        dataFromFile.append(i)
-        # print (i)
 
     results = "No changes found"
 
@@ -214,17 +132,12 @@ def api_query_task():
 
 
 
-context = SSL.Context(SSL.SSLv23_METHOD)
-context.use_privatekey_file('/etc/letsencrypt/live/adam.sobmonitor.org/privkey.pem')
-context.use_certificate_file('/etc/letsencrypt/live/adam.sobmonitor.org/fullchain.pem')
+# context = SSL.Context(SSL.SSLv23_METHOD)
+# context.use_privatekey_file('/etc/letsencrypt/live/adam.sobmonitor.org/privkey.pem')
+# context.use_certificate_file('/etc/letsencrypt/live/adam.sobmonitor.org/fullchain.pem')
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-    # app.run(host='0.0.0.0', port=443, threaded=True, ssl_context=('/etc/letsencrypt/live/adam.sobmonitor.org/fullchain.pem','/etc/letsencrypt/live/adam.sobmonitor.org/privkey.pem'))
-    app.run(host='0.0.0.0', port=443, threaded=True, ssl_context=context)
-    log.debug("Started up analysis app")
-=======
-    app.run(host='0.0.0.0', port=8000, threaded=True, debug=True)
-    log.debug("Started up dashboard app")
->>>>>>> 3ef34b191226f983ab31e4b62d2e5fc59fba7636
+    app.run(host='0.0.0.0', port=443, threaded=True, ssl_context=('/etc/letsencrypt/live/adam.sobmonitor.org/fullchain.pem','/etc/letsencrypt/live/adam.sobmonitor.org/privkey.pem'))
+    # app.run(host='0.0.0.0', port=443, threaded=True, ssl_context=context)
+    log.debug("Started up barcode app")
