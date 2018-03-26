@@ -11,7 +11,7 @@ import subprocess
 from flask import send_file, send_from_directory
 import csv
 from time import gmtime, strftime
-
+from flask import Flask,redirect
 
 app = Flask(__name__,
             static_url_path='',
@@ -21,39 +21,21 @@ app = Flask(__name__,
 
 log = settings.logging
 
+@app.before_request
+def before_request():
+    if request.url.startswith('http://'):
+        url = request.url.replace('http://', 'https://', 1)
+        code = 301
+        return redirect(url, code=code)
 
 @app.route('/')
 def index():
     return render_template('dashboard.html')
 
 
-# For AI pages
-@app.route('/getDataSet1')
-def getDataSet1():
-    return render_template('cw2DataSet1.csv')
-
-
-@app.route('/getDataSet2')
-def getDataSet2():
-    return render_template('cw2DataSet2.csv')
-
-
-# Download example. It is
-@app.route('/getDataSet2turnedoff')  # this is a job for GET, not POST
-def plot_csv1():
-    return send_file('extraFiles/cw2DataSet2.csv',
-                     mimetype='text/csv',
-                     attachment_filename='cw2DataSet2.csv',
-                     as_attachment=True)
-
-
-@app.route('/viewCV')
-def view_resume():
-    return render_template('pdfViewer.html')
-
-@app.route('/downloadCV')
-def download_resume():
-    return send_file('static/other/adam_jarzebak_cv.pdf', mimetype='pdf', as_attachment=True)
+@app.route('/camera')
+def cameraTest():
+    return render_template('camera-test.html')
 
 
 def convert_and_save(b64_string):
@@ -61,55 +43,37 @@ def convert_and_save(b64_string):
 
     data = base64.b64decode(str1)
 
-    fileWriter = open("digit/digit.png", "wb")
+    fileWriter = open("opencv-zbar/image.jpg", "wb")
     fileWriter.write(data)
     fileWriter.close()
 
 
-def executeDigitRecognitionJava():
+def executeBarcodeRecognition():
     try:
-        response = subprocess.check_output("java Main", shell=True, stderr=subprocess.STDOUT, cwd="digit/")
+        response = subprocess.check_output("./opencv-zbar/build/zbar_opencv", shell=True, stderr=subprocess.STDOUT)
+        # response = subprocess.check_output("java Main", shell=True, stderr=subprocess.STDOUT, cwd="digit/")
         return response
     except subprocess.CalledProcessError as e:
         raise RuntimeError("Command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
         #     return "Error while trying to recognize digit. Please try later."
 
 
-@app.route('/dashboard')
-def govDataAccess():
-
-
-    results = "No changes found"
-
-    import math
-
-    # print (dataFromFile)
-    # print (len(dataFromFile), len(newUrls))
-
-    print(DeepDiff(dataFromFile, newUrls))
-
-    if not (len(dataFromFile) == len(newUrls)):
-        results = "Found change for {}. Missing {} file".format(page[0], math.fabs(len(dataFromFile) - len(newUrls)))
-
-    return render_template('dashboard.html', text=results)
-
 
 @app.route('/apiImage')
 def ai_query_image():
+
     f = request.args.get('image')
 
     convert_and_save(f)
 
     log.info("Digit received from web. Start processing!")
 
-    prediction = executeDigitRecognitionJava()
+    prediction = executeBarcodeRecognition()
 
-    log.info("Java executed. Predicted digit: {}".format(prediction))
+    print (prediction)
+    # log.debug("Address: {}".format(request.remote_addr))
 
-    log.debug("Address: {}".format(request.remote_addr))
-
-    return jsonify(result=prediction)
-
+    return jsonify(result=2)
 
 
 
@@ -131,13 +95,12 @@ def api_query_task():
     return jsonify(result=reply)
 
 
-
 # context = SSL.Context(SSL.SSLv23_METHOD)
 # context.use_privatekey_file('/etc/letsencrypt/live/adam.sobmonitor.org/privkey.pem')
 # context.use_certificate_file('/etc/letsencrypt/live/adam.sobmonitor.org/fullchain.pem')
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=443, threaded=True, ssl_context=('/etc/letsencrypt/live/adam.sobmonitor.org/fullchain.pem','/etc/letsencrypt/live/adam.sobmonitor.org/privkey.pem'))
+    app.run(host='0.0.0.0', port=443, threaded=True, debug=False, ssl_context=('/etc/letsencrypt/live/adam.sobmonitor.org/fullchain.pem','/etc/letsencrypt/live/adam.sobmonitor.org/privkey.pem'))
     # app.run(host='0.0.0.0', port=443, threaded=True, ssl_context=context)
     log.debug("Started up barcode app")

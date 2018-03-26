@@ -17,10 +17,9 @@ logging.basicConfig(format=FORMAT, level=logging.DEBUG,
 
 # set up logging to console
 console = logging.StreamHandler()
-console.setLevel(logging.DEBUG)  # this is only if we want to error logs be printed out to console
-
+# console.setLevel(logging.DEBUG)  # this is only if we want to error logs be printed out to console
+console.setLevel(logging.ERROR)
 # set a format which is simpler for console use
-formatter = logging.Formatter('%(asctime)s L: %(lineno)d %(levelname)s - %(message)s','%m-%d %H:%M:%S')
-# formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(message)s\r')
-console.setFormatter(formatter)
+formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(message)s\r')
+# console.setFormatter(formatter)
 logging.getLogger("").addHandler(console)
