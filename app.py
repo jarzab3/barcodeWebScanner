@@ -4,14 +4,17 @@ import time
 # import urllib2
 import numpy as np
 import cv2
-import imutils
 import datetime
 import base64
 import subprocess
 from flask import send_file, send_from_directory
-import csv
 from time import gmtime, strftime
 from flask import Flask,redirect
+import json
+# Barcode recognition
+from pyzbar.pyzbar import decode
+from PIL import Image
+
 
 app = Flask(__name__,
             static_url_path='',
@@ -28,6 +31,7 @@ def before_request():
         code = 301
         return redirect(url, code=code)
 
+
 @app.route('/')
 def index():
     return render_template('dashboard.html')
@@ -38,25 +42,58 @@ def cameraTest():
     return render_template('camera-test.html')
 
 
+python_data = {
+    'some_list': [4, 5, 6],
+    'nested_dict': {'foo': 7, 'bar': 'a string'}
+}
+
+
+@app.route('/lope')
+def testCam():
+    # events = api.call(get_event, arg0, arg1)
+    # geocode = event['latitude'], event['longitude']
+
+    obj = { 'hello': 'world' }
+
+    # geocode = json.dumps("val1", "val2")
+    geocode = json.dumps("image2", "1")
+
+    return render_template('images.html', value=geocode)
+
+    # books = {
+    #     "Learn Python The Hard Way": {
+    #         "author": "Shaw, Zed",
+    #         "rating": "3.92",
+    #         "image": "ef0ceaab-32a8-47fb-ba13-c0b362d970da.jpg"
+    #     }
+    # }
+
+    # passing data to the template
+    # return render_template("iamges.htm", books=books)
+
+
+    # return render_template('images.html')
+
+
+
+
+
+
 def convert_and_save(b64_string):
     str1 = b64_string[22:]
 
     data = base64.b64decode(str1)
 
-    fileWriter = open("opencv-zbar/image.jpg", "wb")
+    fileWriter = open("barcodeImage/image.jpg", "wb")
     fileWriter.write(data)
     fileWriter.close()
 
 
 def executeBarcodeRecognition():
     try:
-        response = subprocess.check_output("./opencv-zbar/build/zbar_opencv", shell=True, stderr=subprocess.STDOUT)
-        # response = subprocess.check_output("java Main", shell=True, stderr=subprocess.STDOUT, cwd="digit/")
-        return response
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError("Command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
-        #     return "Error while trying to recognize digit. Please try later."
-
+        log.debug(decode(Image.open('barcodeImage/image.jpg')))
+    except Exception as error:
+        log.error("Could not decode this image")
 
 
 @app.route('/apiImage')
@@ -73,7 +110,7 @@ def ai_query_image():
     print (prediction)
     # log.debug("Address: {}".format(request.remote_addr))
 
-    return jsonify(result=2)
+    return jsonify(result=prediction)
 
 
 
@@ -101,6 +138,6 @@ def api_query_task():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=443, threaded=True, debug=False, ssl_context=('/etc/letsencrypt/live/adam.sobmonitor.org/fullchain.pem','/etc/letsencrypt/live/adam.sobmonitor.org/privkey.pem'))
+    app.run(host='0.0.0.0', port=443, threaded=True, debug=True, ssl_context=('/etc/letsencrypt/live/adam.sobmonitor.org/fullchain.pem','/etc/letsencrypt/live/adam.sobmonitor.org/privkey.pem'))
     # app.run(host='0.0.0.0', port=443, threaded=True, ssl_context=context)
     log.debug("Started up barcode app")
